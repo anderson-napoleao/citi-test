@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://${app.mysql-server}:3306/bank_db
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+server:
+  port: 8082
+
+app.eureka-server: localhost
+app.mysql-server: localhost
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+info:
+  app:
+    name: ${spring.application.name}
+
+app:
+  config:
+    keycloak:
+      server-url: http://localhost:9080/auth
+      realm: citi-test
+      clientId: citi-test-api-client
+      client-secret: 42537c77-1c8c-4291-99fc-4157fb8424fe
+
+---
+spring.config.activate.on-profile: docker
+app.eureka-server: eureka
+app.mysql-server: mysql
