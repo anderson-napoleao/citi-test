@@ -1,7 +1,7 @@
 FROM openjdk:17-alpine as builder
 MAINTAINER andersonnapoleao
 WORKDIR extracted
-ADD ./target/*.jar app.jar
+ADD ./target/bank-auth-server-0.0.1-SNAPSHOT.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
 FROM openjdk:17-alpine
@@ -11,6 +11,6 @@ COPY --from=builder extracted/spring-boot-loader/ ./
 COPY --from=builder extracted/snapshot-dependencies/ ./
 COPY --from=builder extracted/application/ ./
 
-EXPOSE 8081
+EXPOSE 8761
 
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]

@@ -12,3 +12,13 @@ services:
     build: bank-service-registry
     ports:
       - "8761:8761"
+
+  auth-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: bank-auth-server
+    healthcheck:
+      test: [ "CMD", "curl", "-fs", "http://localhost:9999/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60
