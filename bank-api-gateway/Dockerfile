@@ -1,7 +1,6 @@
 FROM openjdk:17-alpine as builder
-MAINTAINER andersonnapoleao
 WORKDIR extracted
-ADD ./target/*.jar app.jar
+ADD ./target/bank-api-gateway-0.0.1-SNAPSHOT.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
 FROM openjdk:17-alpine

@@ -1,57 +1,6 @@
 spring:
   application:
     name: api-gateway
-  cloud:
-    gateway:
-      routes:
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/user/**
-          filters:
-            - StripPrefix=1
-        - id: funds-transfer-service
-          uri: lb://funds-transfer-service
-          predicates:
-            - Path=/funds-transfer/**
-          filters:
-            - StripPrefix=1
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/user/**
-          filters:
-            - StripPrefix=1
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            token-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/token
-            authorization-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/auth
-            user-name-attribute: preferred_username
-            user-info-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/userinfo
-            jwk-set-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/certs
-            user-info-authentication-method: header
-        registration:
-          internet-banking-core-client:
-            provider: keycloak
-            client-id: citi-test-client
-            client-secret: 926e6809-8eb1-42dc-9ec5-4fc9a0c67146
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:9080/login/oauth2/code/keycloak
-            scope: openid
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/certs
-
-
-app:
-  config:
-    keycloak:
-      url: http://localhost:9080/auth
-      realm: citi-test
-
 
 server:
   port: 8443
@@ -61,19 +10,41 @@ server:
     key-store-password: password
     key-alias: localhost
 
-app.eureka-server: localhost
+app:
+  eureka-username: u
+  eureka-password: p
+  eureka-server: localhost
+  auth-server: localhost
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
 
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
+    org.springframework.cloud.gateway: TRACE
+
+spring.cloud.gateway.routes:
+
+  - id: bank-composite
+    uri: lb://bank-composite
+    predicates:
+      - Path=/bank-composite/**
+
 ---
 spring.config.activate.on-profile: docker
 
-app.eureka-server: eureka
+app:
+  eureka-server: eureka
+  auth-server: auth-server
